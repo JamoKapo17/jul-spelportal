@@ -3,216 +3,156 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Julens Spelportal</title>
+  <title>Fånga Jultomten</title>
   <style>
     body {
       font-family: 'Arial', sans-serif;
       margin: 0;
       padding: 0;
-      background: linear-gradient(to bottom, #ff9999, #ffffff);
+      background: linear-gradient(to bottom, #ff3333, #ffffff);
       color: #333;
+      overflow: hidden;
     }
 
     .header {
       background-color: #b30000;
       color: white;
       text-align: center;
-      padding: 10px;
-    }
-
-    .games {
-      text-align: center;
-      margin: 20px auto;
-    }
-
-    .game-list button {
-      margin: 10px;
-      padding: 15px 20px;
-      font-size: 16px;
-      border: none;
-      border-radius: 5px;
-      background-color: #008000;
-      color: white;
-      cursor: pointer;
-    }
-
-    .game-list button:hover {
-      background-color: #005900;
-    }
-
-    .footer {
-      text-align: center;
-      background-color: #b30000;
-      color: white;
-      padding: 10px 0;
+      padding: 20px;
+      font-size: 24px;
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
 
     .game-area {
-      display: none;
-      margin: 20px;
+      margin: 100px auto 20px;
       text-align: center;
+      position: relative;
+      width: 100%;
+      height: calc(100vh - 120px);
+      overflow: hidden;
+      background: url('https://www.publicdomainpictures.net/pictures/320000/velka/background-snow.jpg') no-repeat center center;
+      background-size: cover;
     }
 
-    .back-button {
-      margin-top: 20px;
-      padding: 10px 15px;
-      font-size: 14px;
+    #santa {
+      width: 60px;
+      height: 60px;
+      background: url('https://upload.wikimedia.org/wikipedia/commons/4/41/Christmas_ornament_santa_claus.svg') no-repeat center center;
+      background-size: contain;
+      position: absolute;
+      cursor: pointer;
+      animation: santaMove 1s infinite ease-in-out;
+    }
+
+    @keyframes santaMove {
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.2);
+      }
+    }
+
+    #scoreboard {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.8);
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 18px;
+      color: #b30000;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .game-over {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      display: none;
+    }
+
+    .game-over h1 {
+      margin-bottom: 20px;
+      color: #b30000;
+    }
+
+    .game-over button {
+      padding: 10px 20px;
+      font-size: 16px;
+      color: white;
+      background-color: #b30000;
       border: none;
       border-radius: 5px;
-      background-color: #b30000;
-      color: white;
       cursor: pointer;
+      transition: background-color 0.3s;
     }
 
-    .back-button:hover {
+    .game-over button:hover {
       background-color: #800000;
     }
   </style>
 </head>
 <body>
-  <header class="header">
-    <h1>🎄 Julens Spelportal 🎄</h1>
-  </header>
-  <main class="games" id="gameMenu">
-    <h2>Välj ett spel:</h2>
-    <div class="game-list">
-      <button onclick="startGame('ordjakt')">Ordjakt</button>
-      <button onclick="startGame('memory')">Memory</button>
-      <button onclick="startGame('matchning')">Matchning</button>
-      <button onclick="startGame('tomtejakt')">Tomtejakt</button>
-      <button onclick="startGame('quiz')">Julquiz</button>
-    </div>
-  </main>
+  <div class="header">🎄 Fånga Jultomten 🎄</div>
+  <div id="scoreboard">Poäng: <span id="score">0</span></div>
   <div class="game-area" id="gameArea">
-    <h2 id="gameTitle"></h2>
-    <div id="gameContent">
-      <!-- Dynamiskt innehåll för spelen -->
-    </div>
-    <button class="back-button" onclick="goBack()">Tillbaka till menyn</button>
+    <div id="santa" onclick="catchSanta()"></div>
   </div>
-  <footer class="footer">
-    <p>🎅 Skapad för julkul! 🎅</p>
-  </footer>
+  <div class="game-over" id="gameOver">
+    <h1>Spelet är slut!</h1>
+    <p>Din poäng: <span id="finalScore">0</span></p>
+    <button onclick="restartGame()">Spela igen</button>
+  </div>
   <script>
-    function startGame(game) {
-      const gameMenu = document.getElementById('gameMenu');
+    let score = 0;
+    let gameActive = true;
+
+    function randomPosition() {
       const gameArea = document.getElementById('gameArea');
-      const gameTitle = document.getElementById('gameTitle');
-      const gameContent = document.getElementById('gameContent');
+      const santa = document.getElementById('santa');
+      const maxX = gameArea.clientWidth - santa.offsetWidth;
+      const maxY = gameArea.clientHeight - santa.offsetHeight;
 
-      gameMenu.style.display = 'none';
-      gameArea.style.display = 'block';
-
-      switch (game) {
-        case 'ordjakt':
-          gameTitle.innerText = 'Ordjakt';
-          gameContent.innerHTML = `
-            <p>Markera orden i ordjakten:</p>
-            <table>
-              <tr>
-                <td>J</td><td>U</td><td>L</td>
-              </tr>
-              <tr>
-                <td>G</td><td>R</td><td>A</td>
-              </tr>
-              <tr>
-                <td>T</td><td>O</td><td>M</td>
-              </tr>
-            </table>
-            <p>Ord att leta efter: JUL, GRAN, TOMTE</p>
-          `;
-          break;
-        case 'memory':
-          gameTitle.innerText = 'Memory';
-          gameContent.innerHTML = `
-            <p>Matcha julbilderna!</p>
-            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;">
-              <div onclick="flipCard(this)" class="card" style="background:#ddd; width:50px; height:50px;">🎅</div>
-              <div onclick="flipCard(this)" class="card" style="background:#ddd; width:50px; height:50px;">🎄</div>
-              <div onclick="flipCard(this)" class="card" style="background:#ddd; width:50px; height:50px;">🎅</div>
-              <div onclick="flipCard(this)" class="card" style="background:#ddd; width:50px; height:50px;">🎄</div>
-            </div>
-          `;
-          break;
-        case 'matchning':
-          gameTitle.innerText = 'Matchning';
-          gameContent.innerHTML = `
-            <p>Dra rätt ord till bilden:</p>
-            <div>
-              <img src="https://via.placeholder.com/100" alt="Tomte" style="width:100px;">
-              <div ondragover="allowDrop(event)" ondrop="drop(event)" style="border:1px solid #000; width:100px; height:50px;">[Släpp här]</div>
-            </div>
-            <div draggable="true" ondragstart="drag(event)" style="cursor:grab;">Tomte</div>
-          `;
-          break;
-        case 'tomtejakt':
-          gameTitle.innerText = 'Tomtejakt';
-          gameContent.innerHTML = `
-            <p>Klicka på tomten så många gånger du kan inom 10 sekunder!</p>
-            <div id="santa" onclick="scorePoint()" style="width:50px; height:50px; background:red; position:absolute;"></div>
-            <p>Poäng: <span id="score">0</span></p>
-          `;
-
-          let score = 0;
-          const santa = document.getElementById('santa');
-          setInterval(() => {
-            santa.style.top = `${Math.random() * 90}vh`;
-            santa.style.left = `${Math.random() * 90}vw`;
-          }, 1000);
-
-          window.scorePoint = function () {
-            score++;
-            document.getElementById('score').innerText = score;
-          };
-          break;
-        case 'quiz':
-          gameTitle.innerText = 'Julquiz';
-          gameContent.innerHTML = `
-            <p>Vilket år introducerades Coca-Cola-jultomten?</p>
-            <button onclick="checkAnswer('1931')">1931</button>
-            <button onclick="checkAnswer('1945')">1945</button>
-            <button onclick="checkAnswer('1920')">1920</button>
-          `;
-
-          window.checkAnswer = function (answer) {
-            if (answer === '1931') {
-              alert('Rätt svar!');
-            } else {
-              alert('Fel svar. Försök igen!');
-            }
-          };
-          break;
-        default:
-          gameTitle.innerText = '';
-          gameContent.innerHTML = '';
-      }
+      santa.style.left = Math.random() * maxX + 'px';
+      santa.style.top = Math.random() * maxY + 'px';
     }
 
-    function goBack() {
-      const gameMenu = document.getElementById('gameMenu');
-      const gameArea = document.getElementById('gameArea');
-
-      gameArea.style.display = 'none';
-      gameMenu.style.display = 'block';
+    function catchSanta() {
+      if (!gameActive) return;
+      score++;
+      document.getElementById('score').innerText = score;
+      randomPosition();
     }
 
-    function allowDrop(event) {
-      event.preventDefault();
+    function endGame() {
+      gameActive = false;
+      document.getElementById('gameOver').style.display = 'block';
+      document.getElementById('finalScore').innerText = score;
     }
 
-    function drag(event) {
-      event.dataTransfer.setData('text', event.target.innerText);
+    function restartGame() {
+      score = 0;
+      gameActive = true;
+      document.getElementById('score').innerText = score;
+      document.getElementById('gameOver').style.display = 'none';
+      randomPosition();
+      setTimeout(endGame, 10000); // 10 seconds timer
     }
 
-    function drop(event) {
-      event.preventDefault();
-      const data = event.dataTransfer.getData('text');
-      event.target.innerText = data;
-    }
-
-    function flipCard(card) {
-      card.style.background = '#fff';
-    }
+    // Start game
+    randomPosition();
+    setTimeout(endGame, 10000); // 10 seconds timer
   </script>
 </body>
 </html>
