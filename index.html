@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Julens Spelportal</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to bottom, #ff9999, #ffffff);
+      color: #333;
+    }
+
+    .header {
+      background-color: #b30000;
+      color: white;
+      text-align: center;
+      padding: 10px;
+    }
+
+    .games {
+      text-align: center;
+      margin: 20px auto;
+    }
+
+    .game-list button {
+      margin: 10px;
+      padding: 15px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      background-color: #008000;
+      color: white;
+      cursor: pointer;
+    }
+
+    .game-list button:hover {
+      background-color: #005900;
+    }
+
+    .footer {
+      text-align: center;
+      background-color: #b30000;
+      color: white;
+      padding: 10px 0;
+    }
+
+    .game-area {
+      display: none;
+      margin: 20px;
+      text-align: center;
+    }
+
+    .back-button {
+      margin-top: 20px;
+      padding: 10px 15px;
+      font-size: 14px;
+      border: none;
+      border-radius: 5px;
+      background-color: #b30000;
+      color: white;
+      cursor: pointer;
+    }
+
+    .back-button:hover {
+      background-color: #800000;
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <h1>🎄 Julens Spelportal 🎄</h1>
+  </header>
+  <main class="games" id="gameMenu">
+    <h2>Välj ett spel:</h2>
+    <div class="game-list">
+      <button onclick="startGame('ordjakt')">Ordjakt</button>
+      <button onclick="startGame('memory')">Memory</button>
+      <button onclick="startGame('matchning')">Matchning</button>
+      <button onclick="startGame('tomtejakt')">Tomtejakt</button>
+      <button onclick="startGame('quiz')">Julquiz</button>
+    </div>
+  </main>
+  <div class="game-area" id="gameArea">
+    <h2 id="gameTitle"></h2>
+    <div id="gameContent">
+      <!-- Dynamiskt innehåll för spelen -->
+    </div>
+    <button class="back-button" onclick="goBack()">Tillbaka till menyn</button>
+  </div>
+  <footer class="footer">
+    <p>🎅 Skapad för julkul! 🎅</p>
+  </footer>
+  <script>
+    function startGame(game) {
+      const gameMenu = document.getElementById('gameMenu');
+      const gameArea = document.getElementById('gameArea');
+      const gameTitle = document.getElementById('gameTitle');
+      const gameContent = document.getElementById('gameContent');
+
+      gameMenu.style.display = 'none';
+      gameArea.style.display = 'block';
+
+      switch (game) {
+        case 'ordjakt':
+          gameTitle.innerText = 'Ordjakt';
+          gameContent.innerHTML = '<p>Ordjakt-spelet kommer snart här!</p>';
+          break;
+        case 'memory':
+          gameTitle.innerText = 'Memory';
+          gameContent.innerHTML = '<p>Memory-spelet kommer snart här!</p>';
+          break;
+        case 'matchning':
+          gameTitle.innerText = 'Matchning';
+          gameContent.innerHTML = '<p>Matchningsspelet kommer snart här!</p>';
+          break;
+        case 'tomtejakt':
+          gameTitle.innerText = 'Tomtejakt';
+          gameContent.innerHTML = '<p>Tomtejakt-spelet kommer snart här!</p>';
+          break;
+        case 'quiz':
+          gameTitle.innerText = 'Julquiz';
+          gameContent.innerHTML = '<p>Julquiz-spelet kommer snart här!</p>';
+          break;
+        default:
+          gameTitle.innerText = '';
+          gameContent.innerHTML = '';
+      }
+    }
+
+    function goBack() {
+      const gameMenu = document.getElementById('gameMenu');
+      const gameArea = document.getElementById('gameArea');
+
+      gameArea.style.display = 'none';
+      gameMenu.style.display = 'block';
+    }
+  </script>
+</body>
+</html>
