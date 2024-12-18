@@ -106,23 +106,81 @@
       switch (game) {
         case 'ordjakt':
           gameTitle.innerText = 'Ordjakt';
-          gameContent.innerHTML = '<p>Ordjakt-spelet kommer snart här!</p>';
+          gameContent.innerHTML = `
+            <p>Markera orden i ordjakten:</p>
+            <table>
+              <tr>
+                <td>J</td><td>U</td><td>L</td>
+              </tr>
+              <tr>
+                <td>G</td><td>R</td><td>A</td>
+              </tr>
+              <tr>
+                <td>T</td><td>O</td><td>M</td>
+              </tr>
+            </table>
+            <p>Ord att leta efter: JUL, GRAN, TOMTE</p>
+          `;
           break;
         case 'memory':
           gameTitle.innerText = 'Memory';
-          gameContent.innerHTML = '<p>Memory-spelet kommer snart här!</p>';
+          gameContent.innerHTML = `
+            <p>Matcha julbilderna!</p>
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;">
+              <div onclick="flipCard(this)" class="card" style="background:#ddd; width:50px; height:50px;">🎅</div>
+              <div onclick="flipCard(this)" class="card" style="background:#ddd; width:50px; height:50px;">🎄</div>
+              <div onclick="flipCard(this)" class="card" style="background:#ddd; width:50px; height:50px;">🎅</div>
+              <div onclick="flipCard(this)" class="card" style="background:#ddd; width:50px; height:50px;">🎄</div>
+            </div>
+          `;
           break;
         case 'matchning':
           gameTitle.innerText = 'Matchning';
-          gameContent.innerHTML = '<p>Matchningsspelet kommer snart här!</p>';
+          gameContent.innerHTML = `
+            <p>Dra rätt ord till bilden:</p>
+            <div>
+              <img src="https://via.placeholder.com/100" alt="Tomte" style="width:100px;">
+              <div ondragover="allowDrop(event)" ondrop="drop(event)" style="border:1px solid #000; width:100px; height:50px;">[Släpp här]</div>
+            </div>
+            <div draggable="true" ondragstart="drag(event)" style="cursor:grab;">Tomte</div>
+          `;
           break;
         case 'tomtejakt':
           gameTitle.innerText = 'Tomtejakt';
-          gameContent.innerHTML = '<p>Tomtejakt-spelet kommer snart här!</p>';
+          gameContent.innerHTML = `
+            <p>Klicka på tomten så många gånger du kan inom 10 sekunder!</p>
+            <div id="santa" onclick="scorePoint()" style="width:50px; height:50px; background:red; position:absolute;"></div>
+            <p>Poäng: <span id="score">0</span></p>
+          `;
+
+          let score = 0;
+          const santa = document.getElementById('santa');
+          setInterval(() => {
+            santa.style.top = `${Math.random() * 90}vh`;
+            santa.style.left = `${Math.random() * 90}vw`;
+          }, 1000);
+
+          window.scorePoint = function () {
+            score++;
+            document.getElementById('score').innerText = score;
+          };
           break;
         case 'quiz':
           gameTitle.innerText = 'Julquiz';
-          gameContent.innerHTML = '<p>Julquiz-spelet kommer snart här!</p>';
+          gameContent.innerHTML = `
+            <p>Vilket år introducerades Coca-Cola-jultomten?</p>
+            <button onclick="checkAnswer('1931')">1931</button>
+            <button onclick="checkAnswer('1945')">1945</button>
+            <button onclick="checkAnswer('1920')">1920</button>
+          `;
+
+          window.checkAnswer = function (answer) {
+            if (answer === '1931') {
+              alert('Rätt svar!');
+            } else {
+              alert('Fel svar. Försök igen!');
+            }
+          };
           break;
         default:
           gameTitle.innerText = '';
@@ -136,6 +194,24 @@
 
       gameArea.style.display = 'none';
       gameMenu.style.display = 'block';
+    }
+
+    function allowDrop(event) {
+      event.preventDefault();
+    }
+
+    function drag(event) {
+      event.dataTransfer.setData('text', event.target.innerText);
+    }
+
+    function drop(event) {
+      event.preventDefault();
+      const data = event.dataTransfer.getData('text');
+      event.target.innerText = data;
+    }
+
+    function flipCard(card) {
+      card.style.background = '#fff';
     }
   </script>
 </body>
